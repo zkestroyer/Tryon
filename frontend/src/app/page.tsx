@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, Sparkles, Image as ImageIcon, Shirt, Loader2, CheckCircle2 } from "lucide-react";
+import { Upload, Sparkles, Image as ImageIcon, Loader2, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const CATALOG = [
+  { id: 1, name: "Leather Biker Jacket", category: "Outerwear", image: "/assets/jacket.png" },
+  { id: 2, name: "Cashmere Sweater", category: "Knitwear", image: "/assets/sweater.png" },
+  { id: 3, name: "Navy Tailored Blazer", category: "Formal", image: "/assets/blazer.png" },
+  { id: 4, name: "White Dress Shirt", category: "Essentials", image: "/assets/shirt.png" },
+];
 
 export default function Home() {
   const [dragActive, setDragActive] = useState(false);
@@ -40,8 +47,7 @@ export default function Home() {
     setResultImage(null);
 
     try {
-      // In a real app, we would upload the file to Supabase Storage first and pass the URL
-      // For this MVP, we just pass a mock string to the Flask backend
+      // Mock API Call to our Flask Backend
       const response = await fetch("http://localhost:8000/api/v1/generate/request", {
         method: "POST",
         headers: {
@@ -56,9 +62,9 @@ export default function Home() {
       const data = await response.json();
       
       if (data.status === "completed") {
-        // Create a local object URL of the uploaded image just to show a result on screen
-        const mockResultUrl = URL.createObjectURL(file);
-        setResultImage(mockResultUrl);
+        // GOLDEN PATH PITCH DEMO: 
+        // We bypass the file URL and hardcode the stunning AI-generated result image for the pitch.
+        setResultImage("/assets/result.png");
       }
     } catch (error) {
       console.error("Error generating try-on:", error);
@@ -178,8 +184,10 @@ export default function Home() {
                   >
                     {file ? (
                       <div className="text-center z-10 animate-fade-in flex flex-col items-center">
-                        <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4 shadow-sm border border-primary/20">
-                          <ImageIcon className="w-8 h-8 text-primary" />
+                        <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mx-auto mb-4 shadow-sm border border-primary/20 overflow-hidden p-1">
+                           {/* Show a mini preview of the uploaded file */}
+                           {/* eslint-disable-next-line @next/next/no-img-element */}
+                           <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover rounded-full" />
                         </div>
                         <p className="font-bold text-foreground text-lg">{file.name}</p>
                         <p className="text-sm text-muted-foreground mt-1">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
@@ -221,36 +229,35 @@ export default function Home() {
                 <div className="glass-card rounded-3xl p-8 flex flex-col">
                   <h2 className="text-2xl font-bold mb-2 flex items-center text-foreground">
                     <span className="bg-secondary p-2 rounded-xl mr-3 text-primary">
-                      <Shirt className="w-5 h-5" />
+                      <Sparkles className="w-5 h-5" />
                     </span>
                     Pick a Style
                   </h2>
                   <p className="text-sm text-muted-foreground mb-6">Select a garment from our trending collection.</p>
                   
                   <div className="flex-grow grid grid-cols-2 gap-4">
-                    {/* Dummy Catalog Items */}
-                    {[1, 2, 3, 4].map((item) => (
+                    {/* Real Generated Catalog Items */}
+                    {CATALOG.map((item) => (
                       <div 
-                        key={item} 
-                        onClick={() => setSelectedGarment(item)}
+                        key={item.id} 
+                        onClick={() => setSelectedGarment(item.id)}
                         className={cn(
                           "rounded-2xl border bg-white overflow-hidden group cursor-pointer transition-all duration-300 relative",
-                          selectedGarment === item 
+                          selectedGarment === item.id 
                             ? "border-primary shadow-[0_0_0_2px_rgba(255,184,184,0.5)] ring-2 ring-primary/30 scale-[1.02]" 
                             : "border-gray-100 hover:border-primary/40 hover:shadow-md hover:-translate-y-1"
                         )}
                       >
-                        <div className="h-32 bg-secondary flex items-center justify-center transition-colors">
-                          <div className="w-full h-full bg-secondary/80 flex items-center justify-center">
-                            <Shirt className="w-12 h-12 text-primary drop-shadow-sm opacity-80" />
-                          </div>
+                        <div className="h-32 bg-secondary flex items-center justify-center transition-colors relative overflow-hidden">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" />
                         </div>
                         <div className="p-4 bg-white">
-                          <p className="text-sm font-bold text-foreground">Trendy Top 0{item}</p>
-                          <p className="text-xs text-muted-foreground font-medium mt-1">New Arrival</p>
+                          <p className="text-sm font-bold text-foreground leading-tight mb-1">{item.name}</p>
+                          <p className="text-xs text-muted-foreground font-medium">{item.category}</p>
                         </div>
                         {/* Selected Indicator */}
-                        {selectedGarment === item && (
+                        {selectedGarment === item.id && (
                           <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-primary-foreground shadow-sm animate-fade-in">
                             ✓
                           </div>
