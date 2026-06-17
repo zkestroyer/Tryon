@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>03 System Architecture and ERD</title>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 900px; padding: 20px; color: #333; background-color: #f9fafb; }
+        .container { background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; }
+        th { background-color: #f3f4f6; font-weight: 600; color: #374151; }
+        code { background-color: #f3f4f6; padding: 3px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #ef4444; }
+        pre { background-color: #1f2937; color: #f8f8f2; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 0.9em; }
+        pre code { background-color: transparent; color: inherit; padding: 0; }
+        blockquote { border-left: 4px solid #3b82f6; margin: 0 0 20px 0; padding: 10px 20px; color: #4b5563; background: #eff6ff; border-radius: 0 8px 8px 0; }
+        h1, h2, h3, h4 { color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-top: 32px; }
+        h1 { margin-top: 0; }
+        a { color: #2563eb; text-decoration: none; font-weight: 500; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body><div class="container">
+<h1>Phase 3: System Architecture & ERD</h1>
+<blockquote><strong>CRITICAL RULE:</strong> This document is the blueprint for the Engineering Team. It must be finalized before any coding begins. It MUST include concrete Mermaid diagrams, field data types, external integration points, and version control strategies.</blockquote>
+
+<hr>
+
+<h2>1. Technology Stack & Implementation Details</h2>
+<ul>
+<li><strong>Frontend:</strong> Next.js 14 (App Router) + React 18 + Tailwind CSS. Hosted on Vercel.</li>
+<li><strong>Backend:</strong> FastAPI (Python 3.11). Hosted on Render / AWS ECS.</li>
+<li><strong>Database:</strong> PostgreSQL (managed by Supabase) for relational data and Auth.</li>
+<li><strong>Storage:</strong> Supabase Storage (S3-compatible) for image uploads.</li>
+<li><strong>Queue/Async:</strong> Redis (Upstash) for simulating async generation jobs (and future AI worker integration).</li>
+</ul>
+
+<h2>2. System Architecture Diagram</h2>
+<pre><code class="language-mermaid">graph TD
+    A[Customer Web Client] --&gt;|HTTPS / REST| B(Next.js App)
+    A2[Brand Admin Portal] --&gt;|HTTPS / REST| B
+    B --&gt;|API Calls| C(FastAPI Backend)
+    B --&gt;|Direct Upload/Auth| D(Supabase Auth &amp; Storage)
+    C --&gt;|SQL / pg_bouncer| E[(Supabase PostgreSQL)]
+    C --&gt;|Simulate Delay| F[Mock Async Job Queue]
+</code></pre>
+
+<h2>3. Database Entity Relationship Diagram (ERD)</h2>
+<pre><code class="language-mermaid">erDiagram
+    USERS {
+        uuid id PK
+        string email
+        string role "admin, brand, customer"
+        datetime created_at
+    }
+    BRANDS {
+        uuid id PK
+        uuid user_id FK
+        string brand_name
+        string website_url
+        datetime created_at
+    }
+    CATALOG_ITEMS {
+        uuid id PK
+        uuid brand_id FK
+        string item_name
+        string category
+        string image_url
+        boolean is_active
+    }
+    GENERATIONS {
+        uuid id PK
+        uuid user_id FK
+        uuid catalog_item_id FK
+        string user_image_url
+        string result_image_url
+        string status "pending, processing, completed, failed"
+        datetime created_at
+    }
+
+    USERS ||--o| BRANDS : "has profile"
+    BRANDS ||--o{ CATALOG_ITEMS : "manages"
+    USERS ||--o{ GENERATIONS : "requests"
+    CATALOG_ITEMS ||--o{ GENERATIONS : "used in"
+</code></pre>
+
+<h2>4. Core Tables Data Types</h2>
+<ul>
+<li><strong><code>users</code></strong>: Managed by Supabase Auth (<code>auth.users</code>).</li>
+<li><strong><code>brands</code></strong>: <code>id</code> (UUID PK), <code>user_id</code> (UUID FK to <code>auth.users</code>), <code>brand_name</code> (VARCHAR 255), <code>website_url</code> (TEXT), <code>created_at</code> (TIMESTAMPZ).</li>
+<li><strong><code>catalog_items</code></strong>: <code>id</code> (UUID PK), <code>brand_id</code> (UUID FK), <code>item_name</code> (VARCHAR 255), <code>category</code> (VARCHAR 100), <code>image_url</code> (TEXT), <code>is_active</code> (BOOLEAN DEFAULT TRUE).</li>
+<li><strong><code>generations</code></strong>: <code>id</code> (UUID PK), <code>user_id</code> (UUID FK), <code>catalog_item_id</code> (UUID FK), <code>user_image_url</code> (TEXT), <code>result_image_url</code> (TEXT), <code>status</code> (VARCHAR 50), <code>created_at</code> (TIMESTAMPZ).</li>
+</ul>
+
+<h2>5. API Core Endpoints & Integrations</h2>
+<table>
+<thead><tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth Required?</th></tr></thead>
+<tbody>
+<tr><td>POST</td><td><code>/api/v1/catalog</code></td><td>Add new item to catalog</td><td>Yes (Brand)</td></tr>
+<tr><td>GET</td><td><code>/api/v1/catalog/{brand_id}</code></td><td>List catalog items</td><td>No</td></tr>
+<tr><td>POST</td><td><code>/api/v1/generate/request</code></td><td>Submit try-on request</td><td>Yes (Customer)</td></tr>
+<tr><td>GET</td><td><code>/api/v1/generate/status/{id}</code></td><td>Poll generation status</td><td>Yes</td></tr>
+</tbody>
+</table>
+
+<h2>6. Integration Points & External APIs</h2>
+<ul>
+<li><strong>Supabase API:</strong> Authentication, PostgreSQL, Storage.</li>
+<li><strong>Future Integration (Plan 2):</strong> Stripe API for brand subscriptions.</li>
+</ul>
+
+<h2>7. Scalability, Performance & Version Control</h2>
+<ul>
+<li><strong>Version Control & CI/CD:</strong> Git flow. <code>main</code> branch deployed to production automatically via Vercel GitHub integration. FastAPI deployed via Docker/Render.</li>
+<li><strong>Scalability Considerations:</strong> Next.js handles high traffic via Edge caching. FastAPI scales horizontally. Supabase scales via connection pooling (pg_bouncer).</li>
+</ul>
+
+<h2>8. Detailed Security Mechanisms</h2>
+<ul>
+<li><strong>SQL Injection Prevention:</strong> Strict usage of SQLAlchemy ORM and Supabase Row Level Security (RLS) policies.</li>
+<li><strong>Data Protection:</strong> Enforced TLS 1.3. User photos stored in secured Supabase buckets with strict CORS and access policies.</li>
+<li><strong>Authentication:</strong> Supabase JWT tokens. Backend API verifies JWT signature before executing any catalog or generation mutations.</li>
+</ul>
+
+<hr>
+<p><strong>Sign-off:</strong></p>
+<ul>
+<li>[ ] Solution Architect (Antigravity)</li>
+<li>[ ] Lead Developer</li>
+<li>[ ] Client Approval</li>
+</ul>
+</div></body>
+</html>

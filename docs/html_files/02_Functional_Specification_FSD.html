@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>02 Functional Specification FSD</title>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 900px; padding: 20px; color: #333; background-color: #f9fafb; }
+        .container { background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: left; }
+        th { background-color: #f3f4f6; font-weight: 600; color: #374151; }
+        code { background-color: #f3f4f6; padding: 3px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em; color: #ef4444; }
+        pre { background-color: #1f2937; color: #f8f8f2; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: monospace; font-size: 0.9em; }
+        pre code { background-color: transparent; color: inherit; padding: 0; }
+        blockquote { border-left: 4px solid #3b82f6; margin: 0 0 20px 0; padding: 10px 20px; color: #4b5563; background: #eff6ff; border-radius: 0 8px 8px 0; }
+        h1, h2, h3, h4 { color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-top: 32px; }
+        h1 { margin-top: 0; }
+        a { color: #2563eb; text-decoration: none; font-weight: 500; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body><div class="container">
+<h1>Phase 2: Functional Specification Document (FSD)</h1>
+<blockquote><strong>CRITICAL RULE:</strong> This document must be filled by the Solution Architect / Business Analyst after reviewing the Onboarding Questionnaire. Development will NOT start until this FSD is signed off by the Client.</blockquote>
+
+<h2>1. Revision History</h2>
+<table>
+<thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>1.0</td><td>2026-06-16</td><td>Antigravity (AI Architect)</td><td>Initial Draft for App MVP (Plan 1)</td></tr>
+</tbody>
+</table>
+
+<h2>2. Introduction</h2>
+<p>This Functional Specification Document outlines the core features, user flows, and requirements for the <strong>Virtual Try-On SaaS Platform (App MVP - Plan 1)</strong>. The intended audience includes the Client, Development Team, and QA.</p>
+
+<h2>3. System Overview</h2>
+<p>The system consists of a Next.js Web Application and a FastAPI backend connected to a Supabase PostgreSQL database. For this MVP phase, the AI Generation is simulated via a mock API delay, allowing the team to fully build, test, and polish the user experience without AI dependencies.</p>
+
+<h2>4. Executive Summary</h2>
+<p>The platform allows clothing brands to integrate a virtual try-on experience. Customers can upload their photo, select a garment, and preview the fit. This MVP focuses on the end-to-end SaaS infrastructure, catalog management, and UI flows.</p>
+
+<h2>5. In-Scope Features & Detailed Functional Requirements</h2>
+<h3>Epic 1: Authentication & User Roles</h3>
+<ul>
+<li><strong>Story 1.1:</strong> As a Brand Owner, I want to register and log in so that I can access my dashboard.</li>
+<li><strong>Story 1.2:</strong> As a System Admin, I want to view all registered brands and their usage metrics.</li>
+</ul>
+
+<h3>Epic 2: Brand Dashboard & Catalog Management</h3>
+<ul>
+<li><strong>Story 2.1:</strong> As a Brand Owner, I want to upload clothing item images and metadata (name, category) so that customers can try them on.</li>
+<li><strong>Story 2.2:</strong> As a Brand Owner, I want to view a list of all my uploaded clothing items.</li>
+</ul>
+
+<h3>Epic 3: The "Try-On" User Flow</h3>
+<ul>
+<li><strong>Story 3.1:</strong> As a Customer, I want to upload a photo of myself.</li>
+<li><strong>Story 3.2:</strong> As a Customer, I want to select a garment from the brand's catalog.</li>
+<li><strong>Story 3.3:</strong> As a Customer, I want to click "Generate" and see a progress indicator while the image processes.</li>
+<li><strong>Story 3.4:</strong> As a Customer, I want to view the resulting image (simulated for MVP) and download it.</li>
+</ul>
+
+<h2>6. Out-of-Scope (Important!)</h2>
+<ul>
+<li>Real AI image generation (deferred to Plan 2/3).</li>
+<li>Real payment gateway integration (Stripe deferred to next phase).</li>
+<li>Embeddable JS Widget (deferred to Integration phase).</li>
+</ul>
+
+<h2>7. Interfaces with Other Systems</h2>
+<ul>
+<li><strong>Supabase Auth:</strong> User authentication and session management.</li>
+<li><strong>Supabase Storage:</strong> Cloud storage for user photos and catalog images.</li>
+</ul>
+
+<h2>8. User Roles & Permissions</h2>
+<table>
+<thead><tr><th>Role Name</th><th>Access Level / Description</th></tr></thead>
+<tbody>
+<tr><td>Super Admin</td><td>Full access to all brands and system analytics.</td></tr>
+<tr><td>Brand Owner</td><td>Access to their specific catalog and try-on metrics.</td></tr>
+<tr><td>Customer</td><td>Public access to the try-on upload flow.</td></tr>
+</tbody>
+</table>
+
+<h2>9. Non-Functional Requirements (NFR)</h2>
+<ul>
+<li><strong>Performance:</strong> Frontend pages must load under 2 seconds (Google Lighthouse &gt; 90).</li>
+<li><strong>Scalability:</strong> API must handle simulated generation requests efficiently.</li>
+<li><strong>Browser Support:</strong> Chrome, Safari, Firefox, Edge (latest 2 versions).</li>
+<li><strong>Responsiveness:</strong> UI must be fully mobile-responsive using Tailwind CSS.</li>
+</ul>
+
+<h2>10. Assumptions, Dependencies, and Constraints</h2>
+<ul>
+<li><strong>Assumptions:</strong> Users have access to modern browsers and can upload standard image formats (JPEG, PNG).</li>
+<li><strong>Dependencies:</strong> Supabase database and Auth must be provisioned.</li>
+<li><strong>Constraints:</strong> The MVP generation step will artificially delay for 8 seconds to simulate AI processing time.</li>
+</ul>
+
+<hr>
+<p><strong>Sign-off:</strong></p>
+<ul>
+<li>[ ] Business/Sales Team Approval</li>
+<li>[ ] Tech Team Approval (Antigravity)</li>
+<li>[ ] Client Approval</li>
+</ul>
+</div></body>
+</html>
