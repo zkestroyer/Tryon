@@ -63,8 +63,12 @@ export default function Home() {
       
       if (data.status === "completed") {
         // GOLDEN PATH PITCH DEMO: 
-        // We bypass the file URL and hardcode the stunning AI-generated result image for the pitch.
-        setResultImage("/assets/result.png");
+        // We bypass the file URL and hardcode the stunning AI-generated result images for the pitch.
+        if (selectedGarment === 1) setResultImage("/assets/result.png"); // Leather Jacket
+        else if (selectedGarment === 2) setResultImage("/assets/result_sweater.png"); // Sweater
+        else if (selectedGarment === 3) setResultImage("/assets/result_blazer.png"); // Blazer
+        else if (selectedGarment === 4) setResultImage("/assets/result_shirt.png"); // Shirt
+        else setResultImage("/assets/result.png"); // Fallback
       }
     } catch (error) {
       console.error("Error generating try-on:", error);

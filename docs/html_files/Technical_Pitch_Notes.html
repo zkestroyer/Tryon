@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Technical Pitch Notes</title>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; margin: 40px auto; max-width: 900px; padding: 20px; color: #333; background-color: #f9fafb; }
+        .container { background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        h1, h2, h3 { color: #111827; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px; margin-top: 32px; }
+        h1 { margin-top: 0; }
+        ul { margin-bottom: 20px; }
+        li { margin-bottom: 8px; }
+        strong { color: #1f2937; }
+    </style>
+</head>
+<body><div class="container">
+<h1>Technical Pitch Notes: Digital Couture</h1>
+<p><em>This document contains the high-level technical talking points for your investor presentation.</em></p>
+
+<h2>1. Executive Summary</h2>
+<p><strong>Digital Couture</strong> is a next-generation Virtual Try-On (VTON) SaaS platform. Unlike legacy competitors that simply "paste" 2D clothing over a photo, our platform utilizes an advanced Deep Learning pipeline to preserve fabric physics, material integrity, and dynamically adapt to unique user body types.</p>
+
+<h2>2. The Current MVP Stack (Plan 1)</h2>
+<p>Our MVP demonstrates a highly performant, enterprise-grade architecture:</p>
+<ul>
+<li><strong>Frontend Architecture:</strong> Built on <strong>Next.js 14 (App Router)</strong> and <strong>TypeScript</strong>. We use a heavily optimized glassmorphism UI utilizing <strong>Tailwind CSS</strong> and <strong>Framer Motion</strong> to ensure a premium, lag-free user experience on both desktop and mobile.</li>
+<li><strong>Backend Architecture:</strong> A scalable <strong>Python Flask API</strong>. Python was specifically chosen as the backend language to allow seamless native integration with our PyTorch machine learning models.</li>
+<li><strong>Database Layer:</strong> <strong>Supabase (PostgreSQL)</strong> handles our relational data (Brands, Catalogs, Users) and utilizes Row-Level Security (RLS) to ensure enterprise-grade data isolation.</li>
+</ul>
+
+<h2>3. The AI Engine Blueprint (Plan 3 Roadmap)</h2>
+<p><em>When investors ask how the AI works, use these points to explain the technology we are building in Plan 3:</em></p>
+<ol>
+<li><strong>Base Model Architecture:</strong> We are leveraging state-of-the-art latent diffusion models (e.g., Stable Diffusion XL, IDM-VTON, OOTDiffusion) specifically fine-tuned for high-fidelity fashion rendering.</li>
+<li><strong>DensePose Body Mapping:</strong> We use Meta's DensePose algorithm to create a 3D surface map of the user's body from a single 2D image. This solves the "body type" problem by allowing the AI to understand volume, posture, and precise body dimensions.</li>
+<li><strong>Material &amp; Fabric Integrity:</strong> We utilize dual-stream encoding to separate the <em>garment texture</em> from the <em>garment shape</em>. This ensures that silk looks like silk and leather looks like leather, naturally rendering realistic shadows, highlights, and folds based on the user's pose.</li>
+<li><strong>Processing Speed:</strong> The pipeline is heavily optimized for inference, designed to return high-resolution 1024x1024 results in approximately 8 seconds using clustered A100/H100 cloud GPUs.</li>
+</ol>
+
+<h2>4. Scalability &amp; Infrastructure Strategy</h2>
+<ul>
+<li><strong>Frontend Delivery:</strong> Deployed via <strong>Vercel's Global Edge Network</strong> for sub-10ms UI loading times anywhere in the world.</li>
+<li><strong>Backend AI Processing:</strong> Decoupled GPU architecture. We will utilize scalable serverless GPU providers (like RunPod or AWS SageMaker) that spin up dynamically based on user demand, minimizing idle compute costs while ensuring massive scalability during traffic spikes.</li>
+<li><strong>Storage:</strong> Supabase S3-compatible cloud storage buckets for high-speed retrieval of HD generation results and catalog assets.</li>
+</ul>
+
+<h2>5. Defense Against Questions</h2>
+<ul>
+<li><strong>"Why is this better than existing AR try-ons?"</strong><br><em>Answer:</em> AR try-ons rely on 3D meshes which look like video game graphics. Our approach uses Latent Diffusion, meaning the output is mathematically indistinguishable from a real photograph.</li>
+<li><strong>"How do you handle complex poses?"</strong><br><em>Answer:</em> Our DensePose integration creates a full topographical map of the user, allowing the diffusion model to warp and wrap the garment around limbs naturally, rather than just laying it flat.</li>
+</ul>
+</div></body>
+</html>
